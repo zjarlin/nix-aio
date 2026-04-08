@@ -17,6 +17,9 @@
   isoImage.compressImage = lib.mkForce true;
 
   networking.networkmanager.enable = true;
+  system.installer.channel.enable = false;
+
+  environment.defaultPackages = lib.mkForce [ ];
 
   environment.systemPackages = [
     installerExecutor
@@ -29,7 +32,7 @@
 
   services.desktopManager.gnome.favoriteAppsOverride = lib.mkForce ''
     [org.gnome.shell]
-    favorite-apps=[ 'niri-installer-ui.desktop', 'org.gnome.Settings.desktop', 'org.gnome.Terminal.desktop', 'firefox.desktop', 'org.gnome.Nautilus.desktop' ]
+    favorite-apps=[ 'niri-installer-ui.desktop', 'org.gnome.Settings.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.Nautilus.desktop' ]
   '';
 
   system.nixos.tags = [

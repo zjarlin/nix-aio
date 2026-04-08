@@ -1,6 +1,7 @@
 {
   diskoPackage,
   lib,
+  nixpkgsSource,
   pkgs,
 }:
 pkgs.stdenvNoCC.mkDerivation {
@@ -24,6 +25,7 @@ pkgs.stdenvNoCC.mkDerivation {
       --set INSTALLER_WAYBAR_CONFIG ${../../scripts/waybar-config.jsonc} \
       --set INSTALLER_WAYBAR_STYLE ${../../scripts/waybar-style.css} \
       --set INSTALLER_HOSTNAME niri-host \
+      --set INSTALLER_NIXPKGS_SOURCE ${nixpkgsSource} \
       --set INSTALLER_LOG_FILE /var/log/niri-installer.log \
       --prefix PATH : ${lib.makeBinPath [
         pkgs.bash

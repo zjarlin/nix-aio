@@ -15,6 +15,7 @@
 
       installerExecutor = pkgs.callPackage ./nix/pkgs/installer-executor.nix {
         diskoPackage = disko.packages.${system}.default;
+        nixpkgsSource = nixpkgs.outPath;
       };
 
       installerUi = pkgs.callPackage ./nix/pkgs/installer-ui.nix {

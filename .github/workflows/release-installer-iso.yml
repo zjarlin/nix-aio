@@ -78,6 +78,6 @@ jobs:
           name: Niri Installer ${{ steps.tag.outputs.value }}
           body: Automated installer ISO build for ${{ steps.tag.outputs.value }}.
           files: |
-            dist/*.iso
+            dist/*.iso*
             dist/SHA256SUMS
           fail_on_unmatched_files: true

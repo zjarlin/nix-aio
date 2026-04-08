@@ -158,6 +158,7 @@ main() {
   [[ -n "${INSTALLER_NIRI_CONFIG:-}" ]] || fail "Missing Niri config asset."
   [[ -n "${INSTALLER_WAYBAR_CONFIG:-}" ]] || fail "Missing Waybar config asset."
   [[ -n "${INSTALLER_WAYBAR_STYLE:-}" ]] || fail "Missing Waybar style asset."
+  [[ -n "${INSTALLER_NIXPKGS_SOURCE:-}" ]] || fail "Missing nixpkgs source."
 
   validate_username "$username" || fail "Username must match ^[a-z_][a-z0-9_-]{0,30}$."
   [[ ${#password} -ge 8 ]] || fail "Password must be at least 8 characters."
@@ -186,7 +187,11 @@ main() {
   persist_log
 
   log "Running nixos-install."
-  nixos-install --root "$TARGET_ROOT" --no-root-passwd
+  nixos-install \
+    --root "$TARGET_ROOT" \
+    --no-root-passwd \
+    -I "nixpkgs=$INSTALLER_NIXPKGS_SOURCE" \
+    -I "nixos-config=$TARGET_ROOT/etc/nixos/configuration.nix"
 
   persist_log
   sync
