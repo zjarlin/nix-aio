@@ -1,0 +1,30 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "spacing": 10,
+  "modules-left": ["clock", "tray"],
+  "modules-center": ["niri/workspaces"],
+  "modules-right": ["network", "pulseaudio", "cpu", "memory"],
+  "clock": {
+    "format": "{:%Y-%m-%d %H:%M}"
+  },
+  "tray": {
+    "spacing": 8
+  },
+  "network": {
+    "format-wifi": "wifi {essid} ({signalStrength}%)",
+    "format-ethernet": "net {ipaddr}",
+    "format-disconnected": "offline"
+  },
+  "pulseaudio": {
+    "format": "vol {volume}%",
+    "format-muted": "mute"
+  },
+  "cpu": {
+    "format": "cpu {usage}%"
+  },
+  "memory": {
+    "format": "mem {}%"
+  }
+}

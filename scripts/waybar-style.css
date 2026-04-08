@@ -1,0 +1,24 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Noto Sans CJK SC", "Noto Sans", sans-serif;
+  font-size: 13px;
+  min-height: 0;
+}
+
+window#waybar {
+  background: rgba(24, 28, 37, 0.94);
+  color: #e7edf3;
+}
+
+#clock,
+#cpu,
+#memory,
+#network,
+#pulseaudio,
+#tray {
+  margin: 4px 6px;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}

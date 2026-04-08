@@ -1,0 +1,77 @@
+{ config, pkgs, ... }:
+{
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  networking.hostName = "@HOSTNAME@";
+  networking.networkmanager.enable = true;
+
+  time.timeZone = "Asia/Shanghai";
+  i18n.defaultLocale = "zh_CN.UTF-8";
+  services.xserver.xkb.layout = "us";
+
+  users.mutableUsers = false;
+  users.users.root.initialHashedPassword = "!";
+  users.users.@USERNAME@ = {
+    isNormalUser = true;
+    description = "@USERNAME@";
+    initialHashedPassword = "@PASSWORD_HASH@";
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+    ];
+  };
+
+  security.sudo.wheelNeedsPassword = true;
+
+  services.xserver.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.displayManager.gdm.wayland = true;
+  services.displayManager.defaultSession = "niri";
+
+  services.gvfs.enable = true;
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+  };
+  security.rtkit.enable = true;
+
+  fonts.packages = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-color-emoji
+  ];
+
+  programs.niri.enable = true;
+  programs.xwayland.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    curl
+    foot
+    fuzzel
+    git
+    nautilus
+    swaybg
+    swayidle
+    swaylock
+    waybar
+    wl-clipboard
+  ];
+
+  environment.etc."xdg/niri/config.kdl".source = ./installer-assets/niri-config.kdl;
+  environment.etc."xdg/waybar/config.jsonc".source = ./installer-assets/waybar-config.jsonc;
+  environment.etc."xdg/waybar/style.css".source = ./installer-assets/waybar-style.css;
+
+  system.stateVersion = "25.11";
+}

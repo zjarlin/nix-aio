@@ -1,0 +1,70 @@
+name: Build Installer ISO
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-installer-iso.yml"
+      - "flake.nix"
+      - "README.md"
+      - "nix/**"
+      - "scripts/**"
+  pull_request:
+    paths:
+      - ".github/workflows/build-installer-iso.yml"
+      - "flake.nix"
+      - "README.md"
+      - "nix/**"
+      - "scripts/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build-iso:
+    name: Build ISO
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          df -h
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Enable Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Show flake metadata
+        run: nix flake metadata --accept-flake-config --no-write-lock-file
+
+      - name: Run flake checks
+        run: nix flake check --accept-flake-config --no-write-lock-file -L
+
+      - name: Build installer ISO
+        run: nix build .#installer-iso --accept-flake-config --no-write-lock-file -L
+
+      - name: Generate checksums
+        run: |
+          mkdir -p dist
+          cp -v result/iso/*.iso dist/
+          sha256sum dist/*.iso | tee dist/SHA256SUMS
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: niri-installer-iso-${{ github.run_number }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
