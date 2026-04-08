@@ -31,7 +31,8 @@ prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%dT%H-%M-%S.png"
 
 binds {
-    Mod+Return { spawn "foot"; }
+    Mod+Return { spawn "ghostty"; }
+    Mod+Shift+Return { spawn "foot"; }
     Mod+D { spawn "fuzzel"; }
     Mod+N { spawn "nm-connection-editor"; }
     Mod+Q { close-window; }

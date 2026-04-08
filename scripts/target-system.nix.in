@@ -49,12 +49,14 @@
     description = "@USERNAME@";
     initialHashedPassword = "@PASSWORD_HASH@";
     extraGroups = [
+      "docker"
       "wheel"
       "networkmanager"
     ];
   };
 
   security.sudo.wheelNeedsPassword = true;
+  virtualisation.docker.enable = true;
 
   services.xserver.enable = true;
   services.xserver.desktopManager.runXdgAutostartIfNone = true;
@@ -84,6 +86,7 @@
   };
 
   fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
     noto-fonts
     noto-fonts-cjk-sans
     noto-fonts-color-emoji
@@ -103,29 +106,75 @@
   };
 
   environment.systemPackages = with pkgs; [
+    aider-chat
+    amber
+    android-studio
+    chezmoi
+    clash-verge-rev
+    cmake
+    codex
+    crystal
     curl
+    docker
     fd
+    ffmpeg
     foot
     fuzzel
     gcc
+    gh
     git
+    ghostty
     google-chrome
     grim
     gnumake
-    jetbrains.idea-oss
+    jadx
+    jetbrains.datagrip
+    jetbrains.idea
+    jetbrains.webstorm
+    jq
+    kotlin
+    lazydocker
     libnotify
+    localsend
     mako
+    maven
+    mise
+    mycli
     nautilus
+    navicat-premium
+    nodejs_20
+    notion-app-enhanced
+    obsidian
+    opencode
+    openjdk
+    pandoc
+    pnpm
+    postman
+    qq
+    reqable
     ripgrep
     satty
     slurp
+    snipaste
+    spring-boot-cli
+    sshpass
+    subversion
     swaybg
     swayidle
     swaylock
+    tesseract
+    todesk
+    tree
     qt6Packages.fcitx5-configtool
     unzip
+    usage
     waybar
+    wechat
+    wget
+    wemeet
     wl-clipboard
+    wpsoffice-cn
+    zstd
   ];
 
   environment.etc."xdg/niri/config.kdl".source = ./installer-assets/niri-config.kdl;
