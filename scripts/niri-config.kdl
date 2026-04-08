@@ -24,6 +24,7 @@ layout {
 }
 
 spawn-at-startup "sh" "-lc" "dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP=niri NIXOS_OZONE_WL=1"
+spawn-at-startup "mako"
 spawn-at-startup "waybar"
 
 prefer-no-csd
@@ -32,9 +33,12 @@ screenshot-path "~/Pictures/Screenshots/%Y-%m-%dT%H-%M-%S.png"
 binds {
     Mod+Return { spawn "foot"; }
     Mod+D { spawn "fuzzel"; }
+    Mod+N { spawn "nm-connection-editor"; }
     Mod+Q { close-window; }
     Mod+Shift+E { quit; }
     Mod+Shift+L { spawn "swaylock" "-f" "-c" "111111"; }
+    Print { spawn "sh" "-lc" "grim -g \"$(slurp)\" - | satty --filename -"; }
+    Shift+Print { spawn "sh" "-lc" "grim - | satty --filename -"; }
     Mod+Left { focus-column-left; }
     Mod+Right { focus-column-right; }
     Mod+Down { focus-window-down; }

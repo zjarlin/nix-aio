@@ -1,0 +1,250 @@
+" ============================================================================
+" 共享配置 - IdeaVim & Neovim
+" ============================================================================
+
+" Leader 键
+let mapleader = ","
+
+" ============================================================================
+" 基础设置
+" ============================================================================
+set nocompatible
+set hidden
+set noswapfile
+set nobackup
+set nowritebackup
+set updatetime=300
+set shortmess+=c
+set cmdheight=2
+
+set encoding=utf-8
+set autochdir
+set autoread
+set wildmenu
+
+" 持久化 undo
+set undofile
+set undodir=$HOME/.vim/undo
+set undolevels=1000
+set undoreload=10000
+
+" ============================================================================
+" 显示设置
+" ============================================================================
+set showmode
+set showcmd
+set laststatus=2
+set ruler
+set mouse=c
+set cursorline
+
+set number
+set relativenumber
+
+" 语法高亮
+syntax enable
+filetype plugin on
+
+" 颜色主题 (IdeaVim 可能不支持，但 nvim 可以)
+set background=dark
+silent! colorscheme gruvbox
+
+" 终端透明
+hi Normal ctermfg=252 ctermbg=none
+highlight CursorLine cterm=NONE ctermbg=black ctermfg=green guibg=NONE guifg=NONE
+
+" 光标形状 (仅终端有效)
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+
+" 禁用错误提示音
+set vb t_vb=
+
+" Sign column
+if has("nvim-0.5.0") || has("patch-8.1.1564")
+    set signcolumn=number
+else
+    set signcolumn=yes
+endif
+
+" ============================================================================
+" 编辑设置
+" ============================================================================
+set textwidth=0      " 禁用自动换行
+set wrap             " 显示折行
+set linebreak        " 单词边界折行
+
+set scrolloff=5
+set sidescrolloff=10
+
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set autoindent
+
+" 搜索
+set showmatch
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+" ============================================================================
+" 自动命令
+" ============================================================================
+augroup MyAutoCmd
+    autocmd!
+
+    " 换行不自动加注释
+    autocmd BufEnter * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+    " 光标回到上次位置
+    autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+    " 光标静止时禁用搜索高亮
+    autocmd cursorhold * set nohlsearch
+augroup END
+
+" 复制时高亮 (nvim only)
+if has("nvim")
+    au TextYankPost * silent! lua vim.highlight.on_yank({higroup="IncSearch", timeout=150})
+endif
+
+" ============================================================================
+" 剪贴板
+" ============================================================================
+if has('unnamedplus')
+    set clipboard=unnamed,unnamedplus
+else
+    set clipboard=unnamed
+endif
+
+" x/X 删除不进寄存器
+nnoremap x "_x
+nnoremap X "_X
+vnoremap x "_x
+vnoremap X "_X
+
+" c/C 修改不进寄存器
+nnoremap c "_c
+nnoremap C "_C
+
+" d/D 删除到系统剪贴板
+nnoremap d "+d
+nnoremap D "+D
+
+" leader+d 黑洞删除
+nnoremap <leader>d "_d
+nnoremap <leader>D "_D
+
+" 粘贴不覆盖寄存器
+vnoremap p "_dP
+
+" Y 复制到行尾
+nnoremap Y y$
+
+" ============================================================================
+" 插入模式快捷键
+" ============================================================================
+inoremap kj <Esc>
+inoremap <C-c> <Esc>
+
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+
+" ESC 保持屏幕居中
+inoremap <ESC> <ESC>zz
+
+" ============================================================================
+" 正常模式快捷键
+" ============================================================================
+" 滚动保持居中
+nnoremap j jzz
+nnoremap k kzz
+nnoremap x xzz
+nnoremap G Gzz
+nnoremap p pzz
+nnoremap P Pzz
+nnoremap <ENTER> <ENTER>zz
+
+" 清除搜索高亮
+nnoremap <Esc> :nohl<CR>
+
+" Space 插入空格 (不进入插入模式)
+noremap <SPACE> i<SPACE><RIGHT><Esc>
+
+" Tab 换行
+noremap <TAB> i<CR><RIGHT><Esc>
+
+" 回车添加空行
+noremap <CR> o<ESC>
+noremap <S-Enter> O<Esc>
+
+" 缩进
+nnoremap <S-Tab> <<
+vnoremap <Tab> >gv
+vnoremap <S-Tab> <gv
+
+" ============================================================================
+" 分屏
+" ============================================================================
+noremap s <nop>
+noremap sh :set nosplitright<CR>:vsplit<CR>:set splitright<CR>
+noremap sj :set splitbelow<CR>:split<CR>
+noremap sk :set nosplitbelow<CR>:split<CR>:set splitbelow<CR>
+noremap sl :set splitright<CR>:vsplit<CR>
+noremap sq <C-w>t<C-w>K
+noremap se <C-w>t<C-w>H
+
+" 窗口导航
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+
+" ============================================================================
+" 文本清理
+" ============================================================================
+" 清理空行和行尾空格
+nnoremap <leader>k :g/^$/d<CR>:%s/\s\+$//<CR>:nohlsearch<CR>
+
+" 删除重复行
+nnoremap <leader>u :sort<CR>:g/^\(.*\)$\n\1$/d<CR>
+
+" 删除 Windows 回车符
+nnoremap <leader>m :%s/\r//g<CR>
+
+" Tab 转空格
+nnoremap <leader>b :%retab!<CR>
+
+" ============================================================================
+" 其他
+" ============================================================================
+" 搜索时启用高亮
+noremap n :set hlsearch<cr>n
+noremap N :set hlsearch<cr>N
+noremap / :set hlsearch<cr>/
+noremap ? :set hlsearch<cr>?
+noremap * *:set hlsearch<cr>
+
+" 选区替换
+vmap sf :s///g<Left><Left><Left>
+
+" 选区到行尾
+nnoremap <leader>v v$
+
+" ============================================================================
+" 插件相关 (nvim only，IdeaVim 会忽略)
+" ============================================================================
+" Tabular 对齐 (需要 vim-tabular 插件)
+vmap <leader>= :Tabularize /=<CR>
+vmap <leader>/ :Tabularize /\/\/<CR>
+vmap <leader>: :Tabularize /:<CR>
+vmap <leader>, :Tabularize /,<CR>
+vmap <leader># :Tabularize /#<CR>
+vmap <leader>* :Tabularize /*<CR>
+vmap <leader>' :Tabularize /'<CR>
+vmap <leader>" :Tabularize /"<CR>

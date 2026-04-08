@@ -124,7 +124,7 @@ class InstallerWindow(Gtk.ApplicationWindow):
         form.attach(username_label, 0, 0, 1, 1)
 
         self.username_entry = Gtk.Entry()
-        self.username_entry.set_text("niri")
+        self.username_entry.set_text("zjarlin")
         form.attach(self.username_entry, 1, 0, 1, 1)
 
         password_label = Gtk.Label(label="Password")

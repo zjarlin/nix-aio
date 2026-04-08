@@ -4,7 +4,7 @@ set -euo pipefail
 LOG_FILE="${INSTALLER_LOG_FILE:-/var/log/niri-installer.log}"
 WORK_ROOT="${INSTALLER_WORK_ROOT:-/tmp/niri-installer}"
 TARGET_ROOT="/mnt"
-HOSTNAME="${INSTALLER_HOSTNAME:-niri-host}"
+HOSTNAME="${INSTALLER_HOSTNAME:-zjarlin}"
 DATA_GIB=128
 OS_MIN_GIB=64
 
@@ -119,9 +119,12 @@ prepare_target_root() {
 
 copy_target_assets() {
   mkdir -p "$TARGET_ROOT/etc/nixos/installer-assets"
+  mkdir -p "$TARGET_ROOT/etc/nixos/installer-assets/user-dotfiles"
   install -Dm644 "$INSTALLER_NIRI_CONFIG" "$TARGET_ROOT/etc/nixos/installer-assets/niri-config.kdl"
   install -Dm644 "$INSTALLER_WAYBAR_CONFIG" "$TARGET_ROOT/etc/nixos/installer-assets/waybar-config.jsonc"
   install -Dm644 "$INSTALLER_WAYBAR_STYLE" "$TARGET_ROOT/etc/nixos/installer-assets/waybar-style.css"
+  cp -R "$INSTALLER_USER_NVIM_CONFIG" "$TARGET_ROOT/etc/nixos/installer-assets/user-dotfiles/nvim"
+  install -Dm644 "$INSTALLER_USER_VIMRC" "$TARGET_ROOT/etc/nixos/installer-assets/user-dotfiles/vimrc"
 }
 
 persist_log() {
@@ -158,6 +161,8 @@ main() {
   [[ -n "${INSTALLER_NIRI_CONFIG:-}" ]] || fail "Missing Niri config asset."
   [[ -n "${INSTALLER_WAYBAR_CONFIG:-}" ]] || fail "Missing Waybar config asset."
   [[ -n "${INSTALLER_WAYBAR_STYLE:-}" ]] || fail "Missing Waybar style asset."
+  [[ -n "${INSTALLER_USER_NVIM_CONFIG:-}" ]] || fail "Missing user Neovim config asset."
+  [[ -n "${INSTALLER_USER_VIMRC:-}" ]] || fail "Missing user Vim config asset."
   [[ -n "${INSTALLER_NIXPKGS_SOURCE:-}" ]] || fail "Missing nixpkgs source."
 
   validate_username "$username" || fail "Username must match ^[a-z_][a-z0-9_-]{0,30}$."

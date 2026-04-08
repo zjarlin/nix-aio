@@ -4,6 +4,8 @@
     ./hardware-configuration.nix
   ];
 
+  nixpkgs.config.allowUnfree = true;
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -14,9 +16,30 @@
 
   networking.hostName = "@HOSTNAME@";
   networking.networkmanager.enable = true;
+  security.polkit.enable = true;
+
+  xdg.mime.enable = true;
+  xdg.mime.defaultApplications = {
+    "application/xhtml+xml" = [ "google-chrome.desktop" ];
+    "text/html" = [ "google-chrome.desktop" ];
+    "x-scheme-handler/http" = [ "google-chrome.desktop" ];
+    "x-scheme-handler/https" = [ "google-chrome.desktop" ];
+  };
 
   time.timeZone = "Asia/Shanghai";
   i18n.defaultLocale = "zh_CN.UTF-8";
+  i18n.inputMethod = {
+    enable = true;
+    type = "fcitx5";
+    fcitx5 = {
+      waylandFrontend = true;
+      addons = with pkgs; [
+        fcitx5-rime
+        qt6Packages.fcitx5-chinese-addons
+        fcitx5-gtk
+      ];
+    };
+  };
   services.xserver.xkb.layout = "us";
 
   users.mutableUsers = false;
@@ -34,10 +57,15 @@
   security.sudo.wheelNeedsPassword = true;
 
   services.xserver.enable = true;
+  services.xserver.desktopManager.runXdgAutostartIfNone = true;
   services.displayManager.gdm.enable = true;
   services.displayManager.gdm.wayland = true;
   services.displayManager.defaultSession = "niri";
 
+  programs.dconf.enable = true;
+  programs.nm-applet.enable = true;
+  programs.nm-applet.indicator = true;
+  services.gnome.gnome-keyring.enable = true;
   services.gvfs.enable = true;
   services.pipewire = {
     enable = true;
@@ -47,24 +75,55 @@
   };
   security.rtkit.enable = true;
 
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
+  };
+
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
-    noto-color-emoji
+    noto-fonts-color-emoji
   ];
 
   programs.niri.enable = true;
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+  };
   programs.xwayland.enable = true;
+
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+  };
 
   environment.systemPackages = with pkgs; [
     curl
+    fd
     foot
     fuzzel
+    gcc
     git
+    google-chrome
+    grim
+    gnumake
+    jetbrains.idea-oss
+    libnotify
+    mako
     nautilus
+    ripgrep
+    satty
+    slurp
     swaybg
     swayidle
     swaylock
+    qt6Packages.fcitx5-configtool
+    unzip
     waybar
     wl-clipboard
   ];
@@ -72,6 +131,38 @@
   environment.etc."xdg/niri/config.kdl".source = ./installer-assets/niri-config.kdl;
   environment.etc."xdg/waybar/config.jsonc".source = ./installer-assets/waybar-config.jsonc;
   environment.etc."xdg/waybar/style.css".source = ./installer-assets/waybar-style.css;
+  environment.etc."xdg/mako/config".text = ''
+    anchor=top-right
+    background-color=#181c25f0
+    border-color=#4c566aff
+    border-radius=12
+    border-size=2
+    default-timeout=5000
+    font=Noto Sans CJK SC 11
+    margin=16
+    padding=14
+    text-color=#e7edf3ff
+  '';
+
+  system.activationScripts.installUserDotfiles = {
+    deps = [ "users" ];
+    text = ''
+      user_home="/home/@USERNAME@"
+      assets_root="/etc/nixos/installer-assets/user-dotfiles"
+
+      if [ -d "$assets_root/nvim" ] && [ ! -e "$user_home/.config/nvim" ]; then
+        install -d -m0755 -o @USERNAME@ -g users "$user_home/.config"
+        cp -R "$assets_root/nvim" "$user_home/.config/nvim"
+        chown -R @USERNAME@:users "$user_home/.config/nvim"
+      fi
+
+      if [ -f "$assets_root/vimrc" ] && [ ! -e "$user_home/.vimrc" ]; then
+        cp "$assets_root/vimrc" "$user_home/.vimrc"
+        chown @USERNAME@:users "$user_home/.vimrc"
+        chmod 0644 "$user_home/.vimrc"
+      fi
+    '';
+  };
 
   system.stateVersion = "25.11";
 }

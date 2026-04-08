@@ -24,7 +24,9 @@ pkgs.stdenvNoCC.mkDerivation {
       --set INSTALLER_NIRI_CONFIG ${../../scripts/niri-config.kdl} \
       --set INSTALLER_WAYBAR_CONFIG ${../../scripts/waybar-config.jsonc} \
       --set INSTALLER_WAYBAR_STYLE ${../../scripts/waybar-style.css} \
-      --set INSTALLER_HOSTNAME niri-host \
+      --set INSTALLER_USER_NVIM_CONFIG ${../../scripts/user-dotfiles/nvim} \
+      --set INSTALLER_USER_VIMRC ${../../scripts/user-dotfiles/vimrc} \
+      --set INSTALLER_HOSTNAME zjarlin \
       --set INSTALLER_NIXPKGS_SOURCE ${nixpkgsSource} \
       --set INSTALLER_LOG_FILE /var/log/niri-installer.log \
       --prefix PATH : ${lib.makeBinPath [
