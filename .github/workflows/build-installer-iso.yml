@@ -43,9 +43,6 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
 
-      - name: Enable Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
       - name: Show flake metadata
         run: nix flake metadata --accept-flake-config --no-write-lock-file
 
