@@ -71,13 +71,61 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Prepare release payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-dist
+          cp -v dist/SHA256SUMS release-dist/
+
+          cat > release-dist/RELEASE-ASSETS.txt <<'EOF'
+          GitHub Releases rejects single assets >= 2 GiB.
+          If the installer image exceeds that limit, this workflow publishes split files named:
+            <image>.part-000
+            <image>.part-001
+            ...
+
+          Reassemble on Linux or macOS:
+            cat <image>.part-* > <image>
+
+          If the reconstructed file ends with .iso.zst:
+            zstd -d <image>.iso.zst
+          EOF
+
+          shopt -s nullglob
+          for image in dist/*.iso dist/*.iso.zst; do
+            base="$(basename "$image")"
+            size="$(stat -c%s "$image")"
+
+            if (( size >= 2147483648 )); then
+              split -b 1900m -d -a 3 "$image" "release-dist/${base}.part-"
+              cat > "release-dist/${base}.parts.txt" <<EOF
+          ${base} exceeded GitHub's 2 GiB per-asset release limit and was split into parts.
+          Reassemble with:
+            cat ${base}.part-* > ${base}
+
+          If the reconstructed file ends with .iso.zst:
+            zstd -d ${base}
+          EOF
+            else
+              cp -v "$image" release-dist/
+            fi
+          done
+
+          if compgen -G 'release-dist/*.part-*' > /dev/null; then
+            sha256sum release-dist/*.part-* > release-dist/PARTS-SHA256SUMS
+          fi
+
       - name: Create or update GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.value }}
           name: Niri Installer ${{ steps.tag.outputs.value }}
-          body: Automated installer ISO build for ${{ steps.tag.outputs.value }}.
+          body: |
+            Automated installer ISO build for ${{ steps.tag.outputs.value }}.
+
+            GitHub Releases only accepts assets smaller than 2 GiB.
+            When the installer image exceeds that limit, this workflow uploads split `part-*` files plus reassembly instructions.
           files: |
-            dist/*.iso*
-            dist/SHA256SUMS
+            release-dist/*
           fail_on_unmatched_files: true
