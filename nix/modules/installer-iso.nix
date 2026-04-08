@@ -13,6 +13,8 @@
 
   isoImage.edition = lib.mkForce "gnome-niri-installer";
   isoImage.volumeID = lib.mkForce "NIRIINSTALL";
+  isoImage.squashfsCompression = lib.mkForce "xz -Xdict-size 100%";
+  isoImage.compressImage = lib.mkForce true;
 
   networking.networkmanager.enable = true;
 

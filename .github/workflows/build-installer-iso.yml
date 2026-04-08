@@ -55,8 +55,8 @@ jobs:
       - name: Generate checksums
         run: |
           mkdir -p dist
-          cp -v result/iso/*.iso dist/
-          sha256sum dist/*.iso | tee dist/SHA256SUMS
+          cp -v result/iso/* dist/
+          sha256sum dist/* | tee dist/SHA256SUMS
 
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
